@@ -1,0 +1,47 @@
+// AUTOMATICALLY GENERATED FILE. PLEASE DO NOT MODIFY IT MANUALLY
+//
+// PIO Unified Debugger
+//
+// Documentation: https://docs.platformio.org/page/plus/debugging.html
+// Configuration: https://docs.platformio.org/page/projectconf/section_env_debug.html
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug",
+            "executable": "/Users/yuhan/OneDrive - Georgia Institute of Technology/YJSP/TCBoard/.pio/build/teensy36/firmware.elf",
+            "projectEnvName": "teensy36",
+            "toolchainBinDir": "/Users/yuhan/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "svdPath": "/Users/yuhan/.platformio/platforms/teensy/misc/svd/MK66F18.svd",
+            "preLaunchTask": {
+                "type": "PlatformIO",
+                "task": "Pre-Debug"
+            }
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug (skip Pre-Debug)",
+            "executable": "/Users/yuhan/OneDrive - Georgia Institute of Technology/YJSP/TCBoard/.pio/build/teensy36/firmware.elf",
+            "projectEnvName": "teensy36",
+            "toolchainBinDir": "/Users/yuhan/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "svdPath": "/Users/yuhan/.platformio/platforms/teensy/misc/svd/MK66F18.svd"
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug (without uploading)",
+            "executable": "/Users/yuhan/OneDrive - Georgia Institute of Technology/YJSP/TCBoard/.pio/build/teensy36/firmware.elf",
+            "projectEnvName": "teensy36",
+            "toolchainBinDir": "/Users/yuhan/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "svdPath": "/Users/yuhan/.platformio/platforms/teensy/misc/svd/MK66F18.svd",
+            "loadMode": "manual"
+        }
+    ]
+}
