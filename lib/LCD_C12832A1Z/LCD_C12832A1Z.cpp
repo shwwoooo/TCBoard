@@ -1,12 +1,17 @@
-#include <SPI.h>
-#include "LCD.h"
+#include "LCD_C12832A1Z.h"
 
-using namespace LCD;
+LCD_C12832A1Z::LCD_C12832A1Z(SPIClass *_spi, uint8_t clk, uint8_t si, uint8_t res, uint8_t cs, uint8_t rs) {
 
-display::display(void) {
-	SPI.setSCK(CLK);		// configure CLK
-	SPI.setMOSI(SI);	// configure SI
-	SPI.begin();
+	CLK = clk;
+	SI = si;
+	RES = res;
+	CS = cs;
+	RS = rs;
+	spi= _spi;
+
+	spi->setSCK(CLK);		// configure CLK
+	spi->setMOSI(SI);	// configure SI
+	spi->begin();
 
 	pinMode(RES, OUTPUT); // configure RES as output
 	pinMode(CS, OUTPUT);  // configure CS as output
@@ -31,26 +36,24 @@ display::display(void) {
 	digitalWrite(CS, HIGH);
 }
 
-void display::data_write(unsigned char d) //Data Output Serial Interface
+void LCD_C12832A1Z::data_write(unsigned char d) //Data Output Serial Interface
 {
-	unsigned int n;
 	digitalWrite(CS, LOW); 
 	digitalWrite(RS, HIGH);
-	SPI.transfer(d);
+	spi->transfer(d);
 	digitalWrite(CS, HIGH);
 }
 
-void display::comm_write(unsigned char d) //Command Output Serial Interface
+void LCD_C12832A1Z::comm_write(unsigned char d) //Command Output Serial Interface
 {
-	unsigned int n;
 	digitalWrite(CS, LOW);
 	digitalWrite(RS, LOW);
-	SPI.transfer(d);
+	spi->transfer(d);
 	digitalWrite(RS, HIGH);
 	digitalWrite(CS, HIGH);
 }
 
-void display::clearLCD(void) {
+void LCD_C12832A1Z::clearLCD(void) {
 	unsigned int i,j;
 	unsigned char page = 0xB0;
 	comm_write(0xAE);          //Display OFF
@@ -69,7 +72,7 @@ void display::clearLCD(void) {
 
 
 
-void display::setPixel(displayArrNum NUM, int row, int col) {
+void LCD_C12832A1Z::setPixel(displayArrNum NUM, int row, int col) {
   while(row > 7) {
 	col += 128;
 	row -= 8;
@@ -83,7 +86,7 @@ void display::setPixel(displayArrNum NUM, int row, int col) {
 	}
 }
 
-void display::drawChar(char ch, int row, int col) {
+void LCD_C12832A1Z::drawChar(char ch, int row, int col) {
   for (int i = 0; i < 6; i++) {
 	for (int j = 0; j < 8; j++) {
 	  if (fontdata_6x8[(j*6+i) + ch * 48]) {
@@ -93,16 +96,14 @@ void display::drawChar(char ch, int row, int col) {
   }
 }
 
-void display::drawString(String str, int row, int col) {
+void LCD_C12832A1Z::drawString(String str, int row, int col) {
   for (auto &ch : str) {
 	drawChar(ch, row, col);
 	col += 6;
   }
 }
 
-
-
-void display::clearPixel(int row, int col) {
+void LCD_C12832A1Z::clearPixel(int row, int col) {
   while(row > 7) {
 	col += 128;
 	row -= 8;
@@ -111,7 +112,7 @@ void display::clearPixel(int row, int col) {
 	displayString[col] = displayString[col] & mask;
 }
 
-void display::clearChar(char ch, int row, int col) {
+void LCD_C12832A1Z::clearChar(char ch, int row, int col) {
   for (int i = 0; i < 6; i++) {
 	for (int j = 0; j < 8; j++) {
 	  if (fontdata_6x8[(j*6+i) + ch * 48]) {
@@ -121,14 +122,14 @@ void display::clearChar(char ch, int row, int col) {
   }
 }
 
-void display::clearString(String str, int row, int col) {
+void LCD_C12832A1Z::clearString(String str, int row, int col) {
   for (auto &ch : str) {
 	clearChar(ch, row, col);
 	col += 6;
   }
 }
 
-void display::DispScreen(void)
+void LCD_C12832A1Z::DispScreen(void)
 {
   unsigned int i,j;
   unsigned char *k = displayString;

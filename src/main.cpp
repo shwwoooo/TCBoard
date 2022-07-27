@@ -1,8 +1,6 @@
 #include "SPI.h"
-#include "LCD.h"
-#include "ADS131M04.h"
-
-using namespace LCD;
+#include "LCD_C12832A1Z.h"
+#include "ADC_ADS131M04.h"
 
 // define pins
 #define SWITCH			39
@@ -21,8 +19,14 @@ using namespace LCD;
 #define ADC_CLK			27
 #define ADC_CLKIN		A13
 
-ADS131M04 externalADC(ADC_CS, ADC_CLKIN, &SPI);
-display mainDisplay;
+#define LCD_RES 		25  // reset signal
+#define LCD_CS  		26  // chip select signal
+#define LCD_RS  		24  // register select signal (A0)
+#define LCD_CLK 		27 // serial clock signal
+#define LCD_SI  		11  // serial data signal
+
+ADS131M04 externalADC;
+LCD_C12832A1Z mainDisplay(&SPI, LCD_CLK, LCD_SI, LCD_RES, LCD_CS, LCD_RS);
 String switchInput;
 String prevSwitchInput;
 String potInput;
@@ -57,7 +61,14 @@ void digitalPotWrite(uint8_t address, uint8_t value) {
   	SPI.transfer(value);
   	// take the SS pin high to de-select the chip:
   	digitalWrite(DIG_POT_CS, HIGH);
-	//SPI.endTransaction();
+}
+
+/**
+ * @brief setup SPI1 for ADC clock
+ * 
+ */
+void dummySPI() {
+	SPI1.transfer(0x00);
 }
 
 /************************************************************/
@@ -75,13 +86,18 @@ void setup() {
 	analogReadAveraging(32);
 	analogReference(INTERNAL1V2); // strange reference setting, read definition of analogRef
 
-	//externalADC.begin();
+	externalADC.begin(&SPI, ADC_CLK, ADC_MISO, ADC_MOSI, ADC_CS, ADC_DRDY);
 	//SPI1.begin();
 	SPI.begin();	// for digital potentiometer
+
+	SPI1.setSCK(32);
+	SPI1.setClockDivider(SPI_CLOCK_DIV2);	// sets the clock to 16MHz/2 = 8MHz
+	SPI1.begin();
 }
 
 void loop() {
 	while(1) {
+
 		selectChannel();
 
 		switchInput = String("channel: " + String(channelNum));
