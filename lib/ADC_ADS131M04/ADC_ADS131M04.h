@@ -1,8 +1,8 @@
-#ifndef ADS131M04_h
-#define ADS131M04_h
+#ifndef ADS131M04_H
+#define ADS131M04_H
 
-#include "Arduino.h"
-#include "SPI.h"
+#include <Arduino.h>
+#include <SPI.h>
 
 struct adcOutput
 {
@@ -235,37 +235,26 @@ struct adcOutput
 #define SPI_MASTER_DUMMY16 0xFFFF
 #define SPI_MASTER_DUMMY32 0xFFFFFFFF
 
-class ADS131M04
-{
-public:
-  ADS131M04();
-  uint8_t ADS131M04_CS_PIN;
-  uint8_t ADS131M04_DRDY_PIN;
-  uint8_t ADS131M04_CLK_PIN;
-  uint8_t ADS131M04_MISO_PIN;
-  uint8_t ADS131M04_MOSI_PIN;
+class ADS131M04 {
+  public:
+    ADS131M04(int8_t _csPin, int8_t _drdyPin, int8_t _resetPin, int8_t _clkoutPin, int8_t _mosiPin, int8_t _misoPin, int8_t _clkPin, SPIClass* _spi);
+    void begin(void);
+    bool isDataReady(void);
+    adcOutput readADC(void);
+    bool setChannelPGA(uint8_t channel, uint16_t pga);
+    bool setOsr(uint16_t osr);
+    bool setChannelEnable(uint8_t channel, uint16_t enable);
+    bool setPowerMode(uint8_t powerMode);
+    bool setInputChannelSelection(uint8_t channel, uint8_t input);
+    bool setInputChannelPhaseDelay(uint8_t channel, uint8_t input);
 
-  void begin(SPIClass *spi, uint8_t clk_pin, uint8_t miso_pin, uint8_t mosi_pin, uint8_t cs_pin, uint8_t drdy_pin);
-  int8_t isDataReadySoft(byte channel);
-  bool isDataReady(void);
-  bool isResetStatus(void);
-  bool isLockSPI(void);
-  bool setDrdyFormat(uint8_t drdyFormat);
-  bool setDrdyStateWhenUnavailable(uint8_t drdyState);
-  bool setPowerMode(uint8_t powerMode);
-  bool setChannelEnable(uint8_t channel, uint16_t enable);
-  bool setChannelPGA(uint8_t channel, uint16_t pga);
-  void setGlobalChop(uint16_t global_chop);
-  void setGlobalChopDelay(uint16_t delay);
-  bool setInputChannelSelection(uint8_t channel, uint8_t input);
-  bool setChannelOffsetCalibration(uint8_t channel, int32_t offset);
-  bool setChannelGainCalibration(uint8_t channel, uint32_t gain);
-  bool setOsr(uint16_t osr);
-  adcOutput readADC(void);
-
-private:
-  uint8_t writeRegister(uint8_t address, uint16_t value);
-  void writeRegisterMasked(uint8_t address, uint16_t value, uint16_t mask);
-  uint16_t readRegister(uint8_t address);
+  private:
+    int8_t csPin, drdyPin, resetPin, clkoutPin, mosiPin, misoPin, clkPin;
+    SPIClass* spi;
+    bool initialised;
+    uint16_t readRegister(uint8_t address);
+    uint8_t writeRegister(uint8_t address, uint16_t value);
+    void writeRegisterMasked(uint8_t address, uint16_t value, uint16_t mask);
 };
+
 #endif

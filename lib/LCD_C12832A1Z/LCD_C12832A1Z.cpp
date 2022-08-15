@@ -38,19 +38,23 @@ LCD_C12832A1Z::LCD_C12832A1Z(SPIClass *_spi, uint8_t clk, uint8_t si, uint8_t re
 
 void LCD_C12832A1Z::data_write(unsigned char d) //Data Output Serial Interface
 {
+	spi->beginTransaction(SPISettings(8192000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW); 
 	digitalWrite(RS, HIGH);
 	spi->transfer(d);
 	digitalWrite(CS, HIGH);
+	spi->endTransaction();
 }
 
 void LCD_C12832A1Z::comm_write(unsigned char d) //Command Output Serial Interface
 {
+	spi->beginTransaction(SPISettings(8192000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 	digitalWrite(RS, LOW);
 	spi->transfer(d);
 	digitalWrite(RS, HIGH);
 	digitalWrite(CS, HIGH);
+	spi->endTransaction();
 }
 
 void LCD_C12832A1Z::clearLCD(void) {
