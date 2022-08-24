@@ -21,11 +21,11 @@
 #define ADC_CLKIN		30
 #define ADC_RESET		33
 
-#define LCD_RES 		25  // reset signal
-#define LCD_CS  		26  // chip select signal
-#define LCD_RS  		24  // register select signal (A0)
-#define LCD_CLK 		27 // serial clock signal
-#define LCD_SI  		11  // serial data signal
+#define LCD_RES 		25
+#define LCD_CS  		26
+#define LCD_RS  		24
+#define LCD_CLK 		27
+#define LCD_SI  		11
 
 ADS131M04 externalADC(ADC_CS, ADC_DRDY, ADC_RESET, ADC_CLKIN, ADC_MOSI, ADC_MISO, ADC_CLK, &SPI);
 LCD_C12832A1Z mainDisplay(&SPI, LCD_CLK, LCD_SI, LCD_RES, LCD_CS, LCD_RS);
@@ -81,6 +81,7 @@ void setup() {
 	analogReadResolution(8);
 	analogReadAveraging(32);
 	analogReference(INTERNAL1V2); // strange reference setting, read definition of analogRef
+								  // had to use it to accept higher voltage input
 
 	externalADC.begin();
 	Serial.begin(115200);
@@ -102,11 +103,15 @@ void loop() {
 		float ch3 = 0;
 		if (externalADC.isDataReady()) {
 			val = externalADC.readADC();
+			// 36 here is for the source voltage
+			// replace it with 55mv after voltage divider is fixed
 			ch0 = val.ch0 / 262144.0f * 36;
 			ch1 = val.ch1 / 262144.0f * 36;
 			ch2 = val.ch2 / 262144.0f * 36;
 			ch3 = val.ch3 / 262144.0f * 36;
 		}
+		// display shows the differential voltage
+		// change to absolute voltage if necessary
 		switch (channelNum) {
 			case 1:
 				ADCInput = String("adc0: " + String(ch0) + "mv");
